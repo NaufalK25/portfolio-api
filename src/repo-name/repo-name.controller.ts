@@ -3,7 +3,7 @@ import { RepoNameService } from './repo-name.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('repo-name')
-@Controller('repo-name')
+@Controller('api/repo-name')
 export class RepoNameController {
   constructor(private repoNameService: RepoNameService) {}
 
