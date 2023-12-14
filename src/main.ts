@@ -10,6 +10,7 @@ async function bootstrap() {
     .setTitle('Portfolio API')
     .setDescription('Rest API for portfolio website')
     .setVersion('3.0.3')
+    .addTag('welcome')
     .addTag('repo')
     .addTag('repo-name')
     .build();
