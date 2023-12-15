@@ -3,7 +3,7 @@ import { GHRepo, GHRepoName } from './gh-repo.dto';
 
 @Injectable()
 export class GhRepoService {
-  async getAllGHRepos() {
+  async getAllGHRepos(): Promise<GHRepo[]> {
     const userResponse = await fetch(
       'https://api.github.com/users/naufalk25/repos',
     );
@@ -29,7 +29,7 @@ export class GhRepoService {
             : null,
           description: repo.description,
           created_at: repo.created_at,
-        } satisfies GHRepo as GHRepo;
+        };
       })
       .sort(
         (a, b) =>
@@ -39,15 +39,35 @@ export class GhRepoService {
     return repos;
   }
 
-  async getAllGHReposName() {
+  async getAllGHReposName(): Promise<GHRepoName[]> {
     const repos = await this.getAllGHRepos();
 
-    return repos.map(
-      (repo) =>
-        ({
-          id: repo.id,
-          name: repo.name,
-        } satisfies GHRepoName as GHRepoName),
+    return repos.map((repo) => ({
+      id: repo.id,
+      name: repo.name,
+    }));
+  }
+
+  async getGHRepoByName(owner: string, repoName: string): Promise<GHRepo> {
+    const repoResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repoName}`,
     );
+
+    const repo = await repoResponse.json();
+
+    return {
+      id: repo.id,
+      name: repo.name,
+      homepage: repo.homepage,
+      html_url: repo.html_url,
+      license: repo.license
+        ? {
+            name: repo.license.name,
+            url: repo.license.url,
+          }
+        : null,
+      description: repo.description,
+      created_at: repo.created_at,
+    };
   }
 }

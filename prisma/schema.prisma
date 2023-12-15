@@ -21,8 +21,8 @@ model Repo {
   htmlUrl     String
   licenseName String?
   licenseUrl  String?
-  thubmnail   String
-  description String
+  thumbnail   String
+  description String?
   created_at  String
   stacks      String[]
 }
