@@ -25,6 +25,7 @@ export class RepoService {
     const createdRepo = await this.prisma.repo.create({
       data: {
         ...dto,
+        tag: `${dto.owner}/${dto.name}`,
         stacks: stacks.split(','),
         thumbnail: uploadResponse.public_id,
       },
@@ -75,10 +76,10 @@ export class RepoService {
     };
   }
 
-  async getReposByName(repoName: string) {
+  async getReposByTag(tag: string) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        name: repoName,
+        tag,
       },
     });
 
@@ -92,19 +93,19 @@ export class RepoService {
 
     return {
       succuess: true,
-      message: `Get repo with name ${repoName} successfully!`,
+      message: `Get repo with tag ${tag} successfully!`,
       data: repo,
     };
   }
 
-  async updateRepoByName(
-    repoName: string,
+  async updateRepoByTag(
+    tag: string,
     dto: UpdateRepoDto,
     uploadResponse?: CloudinaryResponse,
   ) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        name: repoName,
+        tag,
       },
     });
 
@@ -120,7 +121,7 @@ export class RepoService {
 
     const updatedRepo = await this.prisma.repo.update({
       where: {
-        name: repoName,
+        tag,
       },
       data: {
         ...dto,
@@ -131,15 +132,15 @@ export class RepoService {
 
     return {
       succuess: true,
-      message: `Update repo with name ${repoName} successfully!`,
+      message: `Update repo with tag ${tag} successfully!`,
       data: updatedRepo,
     };
   }
 
-  async deleteRepoByName(repoName: string) {
+  async deleteRepoByTag(tag: string) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        name: repoName,
+        tag,
       },
     });
 
@@ -153,13 +154,13 @@ export class RepoService {
 
     await this.prisma.repo.delete({
       where: {
-        name: repoName,
+        tag,
       },
     });
 
     return {
       succuess: true,
-      message: `Delete repo with name ${repoName} successfully!`,
+      message: `Delete repo with tag ${tag} successfully!`,
       data: repo,
     };
   }

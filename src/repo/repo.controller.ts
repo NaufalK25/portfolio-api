@@ -86,21 +86,21 @@ export class RepoController {
   }
 
   @ApiOperation({
-    summary: 'Get repo by name',
+    summary: 'Get repo by tag',
   })
   @ApiNotFoundResponse({
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Get repo with name :repoName successfully!',
+    description: 'Get repo with tag :tag successfully!',
   })
-  @Get(':name')
-  getReposByName(@Param('name') repoName: string) {
-    return this.repoService.getReposByName(repoName);
+  @Get(':tag')
+  getReposByTag(@Param('tag') tag: string) {
+    return this.repoService.getReposByTag(tag);
   }
 
   @ApiOperation({
-    summary: 'Update repo by name',
+    summary: 'Update repo by tag',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -110,12 +110,12 @@ export class RepoController {
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Update repo with name :repoName successfully!',
+    description: 'Update repo with tag :tag successfully!',
   })
-  @Patch(':name')
+  @Patch(':tag')
   @UseInterceptors(FileInterceptor('thumbnail'))
-  async updateReposByName(
-    @Param('name') repoName: string,
+  async updateReposByTag(
+    @Param('tag') tag: string,
     @Body() dto: UpdateRepoDto,
     @UploadedFile() thumbnail?: Express.Multer.File,
   ) {
@@ -123,20 +123,20 @@ export class RepoController {
     if (thumbnail) {
       uploadResponse = await this.cloudinaryService.uploadImage(thumbnail);
     }
-    return this.repoService.updateRepoByName(repoName, dto, uploadResponse);
+    return this.repoService.updateRepoByTag(tag, dto, uploadResponse);
   }
 
   @ApiOperation({
-    summary: 'Delete repo by name',
+    summary: 'Delete repo by tag',
   })
   @ApiNotFoundResponse({
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Delete repo with name :repoName successfully!',
+    description: 'Delete repo with tag :tag successfully!',
   })
-  @Delete(':name')
-  deleteReposByName(@Param('name') repoName: string) {
-    return this.repoService.deleteRepoByName(repoName);
+  @Delete(':tag')
+  deleteReposByTag(@Param('tag') tag: string) {
+    return this.repoService.deleteRepoByTag(tag);
   }
 }

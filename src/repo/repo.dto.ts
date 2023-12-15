@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { RepoType } from '@prisma/client';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateRepoDto {
   @ApiProperty({
@@ -9,6 +10,22 @@ export class CreateRepoDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  owner: string;
+
+  @ApiProperty({
+    type: RepoType,
+    required: true,
+  })
+  @IsEnum(RepoType)
+  @IsNotEmpty()
+  type: RepoType;
 
   @ApiProperty({
     type: String,
@@ -75,6 +92,22 @@ export class UpdateRepoDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  owner?: string;
+
+  @ApiProperty({
+    type: RepoType,
+    required: false,
+  })
+  @IsEnum(RepoType)
+  @IsOptional()
+  type?: RepoType;
 
   @ApiProperty({
     type: String,

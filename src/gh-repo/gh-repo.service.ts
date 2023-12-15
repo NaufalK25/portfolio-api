@@ -19,6 +19,10 @@ export class GhRepoService {
         return {
           id: repo.id,
           name: repo.name,
+          owner: {
+            login: repo.owner.login,
+            type: repo.owner.type,
+          },
           homepage: repo.homepage,
           html_url: repo.html_url,
           license: repo.license
@@ -29,7 +33,7 @@ export class GhRepoService {
             : null,
           description: repo.description,
           created_at: repo.created_at,
-        };
+        } satisfies GHRepo;
       })
       .sort(
         (a, b) =>
@@ -42,10 +46,17 @@ export class GhRepoService {
   async getAllGHReposName(): Promise<GHRepoName[]> {
     const repos = await this.getAllGHRepos();
 
-    return repos.map((repo) => ({
-      id: repo.id,
-      name: repo.name,
-    }));
+    return repos.map(
+      (repo) =>
+        ({
+          id: repo.id,
+          name: repo.name,
+          owner: {
+            login: repo.owner.login,
+            type: repo.owner.type,
+          },
+        } satisfies GHRepoName),
+    );
   }
 
   async getGHRepoByName(owner: string, repoName: string): Promise<GHRepo> {
@@ -58,6 +69,10 @@ export class GhRepoService {
     return {
       id: repo.id,
       name: repo.name,
+      owner: {
+        login: repo.owner.login,
+        type: repo.owner.type,
+      },
       homepage: repo.homepage,
       html_url: repo.html_url,
       license: repo.license
@@ -68,6 +83,6 @@ export class GhRepoService {
         : null,
       description: repo.description,
       created_at: repo.created_at,
-    };
+    } satisfies GHRepo;
   }
 }

@@ -9,6 +9,8 @@ export const RepoDtoSchema: ApiBodySchema = {
   type: 'object',
   properties: {
     name: { type: 'string' },
+    owner: { type: 'string' },
+    type: { type: 'string', enum: ['User', 'Organization'] },
     homepage: { type: 'string' },
     htmlUrl: { type: 'string' },
     licenseName: { type: 'string' },

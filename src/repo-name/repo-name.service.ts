@@ -30,10 +30,18 @@ export class RepoNameService {
   async syncAllReposName() {
     const ghReposName = await this.ghRepoService.getAllGHReposName();
 
-    const reposNamePayload = ghReposName.map((repoName) => ({
-      ghId: repoName.id,
-      name: repoName.name,
-    }));
+    const reposNamePayload = ghReposName.map((repoName) => {
+      const { id, name, owner } = repoName;
+      const { login, type } = owner;
+
+      return {
+        ghId: id,
+        tag: `${login}/${name}`,
+        name,
+        owner: login,
+        type,
+      };
+    });
 
     const reposName = await this.prisma.repoName.findMany();
 

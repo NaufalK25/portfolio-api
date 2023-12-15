@@ -16,7 +16,10 @@ model Repo {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  name        String   @unique
+  tag         String   @unique
+  name        String
+  owner       String
+  type        RepoType
   homepage    String?
   htmlUrl     String
   licenseName String?
@@ -32,6 +35,14 @@ model RepoName {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  ghId Int
-  name String
+  ghId  Int      @unique
+  tag   String   @unique
+  name  String
+  owner String
+  type  RepoType
+}
+
+enum RepoType {
+  User
+  Organization
 }
