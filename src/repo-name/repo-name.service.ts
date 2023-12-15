@@ -35,8 +35,7 @@ export class RepoNameService {
       const { login, type } = owner;
 
       return {
-        ghId: id,
-        tag: `${login}/${name}`,
+        ghId: `${id}`,
         name,
         owner: login,
         type,

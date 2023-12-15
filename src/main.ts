@@ -16,7 +16,7 @@ async function bootstrap() {
     .enableCors({
       origin: [
         'http://localhost:5173',
-        'https://muhammad-naufal-kateni.netlify.app/',
+        'https://muhammad-naufal-kateni.netlify.app',
       ],
     });
 
@@ -25,6 +25,7 @@ async function bootstrap() {
     .setDescription('Rest API for portfolio website')
     .setVersion('3.0.3')
     .addTag('welcome')
+    .addTag('gh-repo')
     .addTag('repo')
     .addTag('repo-name')
     .build();

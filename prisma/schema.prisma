@@ -16,7 +16,7 @@ model Repo {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  tag         String   @unique
+  ghId        String   @unique
   name        String
   owner       String
   type        RepoType
@@ -35,8 +35,7 @@ model RepoName {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  ghId  Int      @unique
-  tag   String   @unique
+  ghId  String   @unique
   name  String
   owner String
   type  RepoType

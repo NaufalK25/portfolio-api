@@ -8,6 +8,7 @@ type ApiBodySchema = SchemaObject | ReferenceObject;
 export const RepoDtoSchema: ApiBodySchema = {
   type: 'object',
   properties: {
+    ghId: { type: 'string' },
     name: { type: 'string' },
     owner: { type: 'string' },
     type: { type: 'string', enum: ['User', 'Organization'] },

@@ -64,7 +64,7 @@ export class GhRepoService {
       `https://api.github.com/repos/${owner}/${repoName}`,
     );
 
-    const repo = await repoResponse.json();
+    const repo = (await repoResponse.json()) as GHRepo;
 
     return {
       id: repo.id,

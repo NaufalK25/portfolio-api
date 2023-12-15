@@ -25,9 +25,8 @@ export class RepoService {
     const createdRepo = await this.prisma.repo.create({
       data: {
         ...dto,
-        tag: `${dto.owner}/${dto.name}`,
         stacks: stacks.split(','),
-        thumbnail: uploadResponse.public_id,
+        thumbnail: uploadResponse.secure_url,
       },
     });
 
@@ -76,10 +75,10 @@ export class RepoService {
     };
   }
 
-  async getReposByTag(tag: string) {
+  async getReposByGhId(ghId: string) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        tag,
+        ghId,
       },
     });
 
@@ -93,19 +92,19 @@ export class RepoService {
 
     return {
       succuess: true,
-      message: `Get repo with tag ${tag} successfully!`,
+      message: `Get repo with ghId ${ghId} successfully!`,
       data: repo,
     };
   }
 
-  async updateRepoByTag(
-    tag: string,
+  async updateRepoByGhId(
+    ghId: string,
     dto: UpdateRepoDto,
     uploadResponse?: CloudinaryResponse,
   ) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        tag,
+        ghId,
       },
     });
 
@@ -121,26 +120,26 @@ export class RepoService {
 
     const updatedRepo = await this.prisma.repo.update({
       where: {
-        tag,
+        ghId,
       },
       data: {
         ...dto,
         stacks: stacks ? stacks.split(',') : repo.stacks,
-        thumbnail: uploadResponse ? uploadResponse.public_id : repo.thumbnail,
+        thumbnail: uploadResponse ? uploadResponse.secure_url : repo.thumbnail,
       },
     });
 
     return {
       succuess: true,
-      message: `Update repo with tag ${tag} successfully!`,
+      message: `Update repo with ghId ${ghId} successfully!`,
       data: updatedRepo,
     };
   }
 
-  async deleteRepoByTag(tag: string) {
+  async deleteRepoByGhId(ghId: string) {
     const repo = await this.prisma.repo.findUnique({
       where: {
-        tag,
+        ghId,
       },
     });
 
@@ -154,13 +153,13 @@ export class RepoService {
 
     await this.prisma.repo.delete({
       where: {
-        tag,
+        ghId,
       },
     });
 
     return {
       succuess: true,
-      message: `Delete repo with tag ${tag} successfully!`,
+      message: `Delete repo with ghId ${ghId} successfully!`,
       data: repo,
     };
   }

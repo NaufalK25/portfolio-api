@@ -86,21 +86,21 @@ export class RepoController {
   }
 
   @ApiOperation({
-    summary: 'Get repo by tag',
+    summary: 'Get repo by ghId',
   })
   @ApiNotFoundResponse({
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Get repo with tag :tag successfully!',
+    description: 'Get repo with ghId :ghId successfully!',
   })
-  @Get(':tag')
-  getReposByTag(@Param('tag') tag: string) {
-    return this.repoService.getReposByTag(tag);
+  @Get(':ghId')
+  getReposByGhId(@Param('ghId') ghId: string) {
+    return this.repoService.getReposByGhId(ghId);
   }
 
   @ApiOperation({
-    summary: 'Update repo by tag',
+    summary: 'Update repo by ghId',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -110,12 +110,12 @@ export class RepoController {
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Update repo with tag :tag successfully!',
+    description: 'Update repo with ghId :ghId successfully!',
   })
-  @Patch(':tag')
+  @Patch(':ghId')
   @UseInterceptors(FileInterceptor('thumbnail'))
-  async updateReposByTag(
-    @Param('tag') tag: string,
+  async updateReposByGhId(
+    @Param('ghId') ghId: string,
     @Body() dto: UpdateRepoDto,
     @UploadedFile() thumbnail?: Express.Multer.File,
   ) {
@@ -123,20 +123,20 @@ export class RepoController {
     if (thumbnail) {
       uploadResponse = await this.cloudinaryService.uploadImage(thumbnail);
     }
-    return this.repoService.updateRepoByTag(tag, dto, uploadResponse);
+    return this.repoService.updateRepoByGhId(ghId, dto, uploadResponse);
   }
 
   @ApiOperation({
-    summary: 'Delete repo by tag',
+    summary: 'Delete repo by ghId',
   })
   @ApiNotFoundResponse({
     description: 'Repo not found!',
   })
   @ApiOkResponse({
-    description: 'Delete repo with tag :tag successfully!',
+    description: 'Delete repo with ghId :ghId successfully!',
   })
-  @Delete(':tag')
-  deleteReposByTag(@Param('tag') tag: string) {
-    return this.repoService.deleteRepoByTag(tag);
+  @Delete(':ghId')
+  deleteReposByGhId(@Param('ghId') ghId: string) {
+    return this.repoService.deleteRepoByGhId(ghId);
   }
 }

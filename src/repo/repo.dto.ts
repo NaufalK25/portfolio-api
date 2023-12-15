@@ -9,6 +9,14 @@ export class CreateRepoDto {
   })
   @IsString()
   @IsNotEmpty()
+  ghId: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({
