@@ -20,6 +20,20 @@ export class RepoService {
       });
     }
 
+    const repo = await this.prisma.repo.findUnique({
+      where: {
+        ghId: dto.ghId,
+      },
+    });
+
+    if (repo) {
+      return new BadRequestException({
+        success: false,
+        message: 'Repo already exists!',
+        data: null,
+      });
+    }
+
     const { stacks } = dto;
 
     const createdRepo = await this.prisma.repo.create({
