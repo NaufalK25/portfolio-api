@@ -83,7 +83,7 @@ export class RepoService {
     await this.prisma.repo.deleteMany();
 
     return {
-      succuess: true,
+      success: true,
       message: `Delete all repo successfully!`,
       data: null,
     };
@@ -105,7 +105,7 @@ export class RepoService {
     }
 
     return {
-      succuess: true,
+      success: true,
       message: `Get repo with ghId ${ghId} successfully!`,
       data: repo,
     };
@@ -144,7 +144,7 @@ export class RepoService {
     });
 
     return {
-      succuess: true,
+      success: true,
       message: `Update repo with ghId ${ghId} successfully!`,
       data: updatedRepo,
     };
@@ -172,7 +172,7 @@ export class RepoService {
     });
 
     return {
-      succuess: true,
+      success: true,
       message: `Delete repo with ghId ${ghId} successfully!`,
       data: repo,
     };
