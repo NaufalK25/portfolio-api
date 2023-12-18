@@ -5,11 +5,15 @@ import {
 } from '@nestjs/common';
 import { CreateRepoDto, UpdateRepoDto } from './repo.dto';
 import { CloudinaryResponse } from 'src/cloudinary/cloudinary.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RepoService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   async createRepo(dto: CreateRepoDto, uploadResponse: CloudinaryResponse) {
     if (!uploadResponse.public_id) {
@@ -132,6 +136,12 @@ export class RepoService {
 
     const { stacks } = dto;
 
+    if (uploadResponse) {
+      await this.cloudinaryService.deleteImage(
+        repo.thumbnail.split('/').at(-1).split('.').slice(0, -1).join('.'),
+      );
+    }
+
     const updatedRepo = await this.prisma.repo.update({
       where: {
         ghId,
@@ -165,6 +175,9 @@ export class RepoService {
       });
     }
 
+    await this.cloudinaryService.deleteImage(
+      repo.thumbnail.split('/').at(-1).split('.').slice(0, -1).join('.'),
+    );
     await this.prisma.repo.delete({
       where: {
         ghId,

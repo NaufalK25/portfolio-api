@@ -5,7 +5,7 @@ import { CloudinaryResponse } from './cloudinary.dto';
 
 @Injectable()
 export class CloudinaryService {
-  async uploadImage(file: Express.Multer.File) {
+  async uploadImage(publicId: string, file: Express.Multer.File) {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       if (!file) {
         reject(
@@ -21,8 +21,7 @@ export class CloudinaryService {
         {
           folder: 'portfolio',
           invalidate: true,
-          overwrite: true,
-          public_id: file?.originalname.split('.').slice(0, -1).join(''),
+          public_id: publicId,
           resource_type: 'image',
         },
         (error, result) => {
@@ -32,6 +31,13 @@ export class CloudinaryService {
       );
 
       createReadStream(file.buffer).pipe(uploadStream);
+    });
+  }
+
+  async deleteImage(publicId: string) {
+    return await v2.uploader.destroy(`portfolio/${publicId}`, {
+      invalidate: true,
+      resource_type: 'image',
     });
   }
 }

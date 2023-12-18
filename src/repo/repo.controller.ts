@@ -53,7 +53,10 @@ export class RepoController {
     @Body() dto: CreateRepoDto,
     @UploadedFile() thumbnail: Express.Multer.File,
   ) {
-    const uploadResponse = await this.cloudinaryService.uploadImage(thumbnail);
+    const uploadResponse = await this.cloudinaryService.uploadImage(
+      dto.name,
+      thumbnail,
+    );
     return this.repoService.createRepo(dto, uploadResponse);
   }
 
@@ -121,7 +124,10 @@ export class RepoController {
   ) {
     let uploadResponse: CloudinaryResponse;
     if (thumbnail) {
-      uploadResponse = await this.cloudinaryService.uploadImage(thumbnail);
+      uploadResponse = await this.cloudinaryService.uploadImage(
+        dto.name,
+        thumbnail,
+      );
     }
     return this.repoService.updateRepoByGhId(ghId, dto, uploadResponse);
   }
