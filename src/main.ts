@@ -16,6 +16,7 @@ async function bootstrap() {
     .enableCors({
       origin: [
         'http://localhost:5173',
+        'https://mnaufalk-dashboard.netlify.app',
         'https://muhammad-naufal-kateni.netlify.app',
       ],
     });
