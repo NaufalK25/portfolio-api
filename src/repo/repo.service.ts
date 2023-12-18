@@ -12,12 +12,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class RepoService {
   constructor(
     private prisma: PrismaService,
-    private cloudinaryService: CloudinaryService,
+    private cloudinary: CloudinaryService,
   ) {}
 
   async createRepo(dto: CreateRepoDto, uploadResponse: CloudinaryResponse) {
     if (!uploadResponse.public_id) {
-      return new BadRequestException({
+      throw new BadRequestException({
         success: false,
         message: uploadResponse.message,
         data: null,
@@ -31,7 +31,7 @@ export class RepoService {
     });
 
     if (repo) {
-      return new BadRequestException({
+      throw new BadRequestException({
         success: false,
         message: 'Repo already exists!',
         data: null,
@@ -59,7 +59,7 @@ export class RepoService {
     const repos = await this.prisma.repo.findMany();
 
     if (repos.length === 0) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo not found!',
         data: null,
@@ -77,7 +77,7 @@ export class RepoService {
     const repos = await this.prisma.repo.findMany();
 
     if (repos.length === 0) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo not found!',
         data: null,
@@ -101,7 +101,7 @@ export class RepoService {
     });
 
     if (!repo) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo not found!',
         data: null,
@@ -127,7 +127,7 @@ export class RepoService {
     });
 
     if (!repo) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo not found!',
         data: null,
@@ -137,7 +137,7 @@ export class RepoService {
     const { stacks } = dto;
 
     if (uploadResponse) {
-      await this.cloudinaryService.deleteImage(
+      await this.cloudinary.deleteImage(
         repo.thumbnail.split('/').at(-1).split('.').slice(0, -1).join('.'),
       );
     }
@@ -168,14 +168,14 @@ export class RepoService {
     });
 
     if (!repo) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo not found!',
         data: null,
       });
     }
 
-    await this.cloudinaryService.deleteImage(
+    await this.cloudinary.deleteImage(
       repo.thumbnail.split('/').at(-1).split('.').slice(0, -1).join('.'),
     );
     await this.prisma.repo.delete({

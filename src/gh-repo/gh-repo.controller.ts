@@ -5,7 +5,7 @@ import { GhRepoService } from './gh-repo.service';
 @ApiTags('gh-repo')
 @Controller('api/gh-repo')
 export class GhRepoController {
-  constructor(private ghRepoService: GhRepoService) {}
+  constructor(private ghRepo: GhRepoService) {}
 
   @ApiOperation({
     summary: 'Get github repo by owner/repoName',
@@ -18,6 +18,6 @@ export class GhRepoController {
     @Param('owner') owner: string,
     @Param('repoName') repoName: string,
   ) {
-    return this.ghRepoService.getGHRepoByName(owner, repoName);
+    return this.ghRepo.getGHRepoByName(owner, repoName);
   }
 }

@@ -4,16 +4,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RepoNameService {
-  constructor(
-    private prisma: PrismaService,
-    private ghRepoService: GhRepoService,
-  ) {}
+  constructor(private prisma: PrismaService, private ghRepo: GhRepoService) {}
 
   async getAllReposName() {
     const reposName = await this.prisma.repoName.findMany();
 
     if (reposName.length === 0) {
-      return new NotFoundException({
+      throw new NotFoundException({
         success: false,
         message: 'Repo name not found!',
         data: null,
@@ -28,7 +25,7 @@ export class RepoNameService {
   }
 
   async syncAllReposName() {
-    const ghReposName = await this.ghRepoService.getAllGHReposName();
+    const ghReposName = await this.ghRepo.getAllGHReposName();
 
     const reposNamePayload = ghReposName.map((repoName) => {
       const { id, name, owner } = repoName;

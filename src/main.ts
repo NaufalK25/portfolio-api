@@ -26,9 +26,20 @@ async function bootstrap() {
     .setDescription('Rest API for portfolio website')
     .setVersion('3.0.3')
     .addTag('welcome')
+    .addTag('auth')
     .addTag('gh-repo')
     .addTag('repo')
     .addTag('repo-name')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        in: 'header',
+      },
+      'access_token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document, {

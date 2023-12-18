@@ -6,7 +6,12 @@ import { CloudinaryResponse } from './cloudinary.dto';
 
 @Injectable()
 export class CloudinaryService {
-  constructor(private configService: ConfigService) {}
+  private folder: string;
+  constructor(config: ConfigService) {
+    this.folder = `portfolio${
+      config.get('NODE_ENV') === 'development' ? '/dev' : ''
+    }`;
+  }
 
   async uploadImage(publicId: string, file: Express.Multer.File) {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
@@ -22,9 +27,7 @@ export class CloudinaryService {
 
       const uploadStream = v2.uploader.upload_stream(
         {
-          folder: `portfolio${
-            this.configService.get('NODE_ENV') === 'development' ? '/dev' : ''
-          }`,
+          folder: this.folder,
           invalidate: true,
           public_id: publicId,
           resource_type: 'image',
@@ -40,14 +43,9 @@ export class CloudinaryService {
   }
 
   async deleteImage(publicId: string) {
-    return await v2.uploader.destroy(
-      `portfolio${
-        this.configService.get('NODE_ENV') === 'development' ? '/dev' : ''
-      }/${publicId}`,
-      {
-        invalidate: true,
-        resource_type: 'image',
-      },
-    );
+    return await v2.uploader.destroy(`${this.folder}/${publicId}`, {
+      invalidate: true,
+      resource_type: 'image',
+    });
   }
 }
