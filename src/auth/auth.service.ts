@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import { AuthDto } from './auth.dto';
+import { AuthDto, VerifyDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -108,6 +108,36 @@ export class AuthService {
 
     return {
       access_token: token,
+    };
+  }
+
+  async verify({ token }: VerifyDto) {
+    const response = await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${this.config.get(
+        'GOOGLE_SECRET_KEY',
+      )}&response=${token}`,
+      {
+        method: 'POST',
+      },
+    );
+    const { success } = await response.json();
+
+    if (!success) {
+      throw new BadRequestException({
+        success: false,
+        message: 'User is not a human!',
+        data: {
+          success,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      message: 'User verified successfully!',
+      data: {
+        success,
+      },
     };
   }
 }

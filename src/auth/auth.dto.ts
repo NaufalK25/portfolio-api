@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthDto {
   @ApiProperty({
@@ -17,6 +17,16 @@ export class AuthDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+export class VerifyDto {
+  @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  token: string;
 }
 
 export type JwtUserDto = {

@@ -7,7 +7,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthDto } from './auth.dto';
+import { AuthDto, VerifyDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -45,5 +45,20 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: AuthDto) {
     return this.auth.login(dto);
+  }
+
+  @ApiOperation({
+    summary: 'Verify whether user is a bot or human',
+  })
+  @ApiBadRequestResponse({
+    description: 'User is not a human!',
+  })
+  @ApiOkResponse({
+    description: 'User verified successfully!',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post('verify')
+  verify(@Body() dto: VerifyDto) {
+    return this.auth.verify(dto);
   }
 }
