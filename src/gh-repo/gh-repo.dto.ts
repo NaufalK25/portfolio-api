@@ -21,10 +21,4 @@ type GHRepoLicense = {
   url: string;
 };
 
-export type GHRepoName = Omit<
-  Omit<
-    Omit<Omit<Omit<GHRepo, 'homepage'>, 'html_url'>, 'license'>,
-    'description'
-  >,
-  'created_at'
->;
+export type GHRepoName = Pick<GHRepo, 'id' | 'name' | 'owner'>;
