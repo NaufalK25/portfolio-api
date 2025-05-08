@@ -7,12 +7,14 @@ import { CreateRepoDto, UpdateRepoDto } from './repo.dto';
 import { CloudinaryResponse } from 'src/cloudinary/cloudinary.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GhRepoService } from 'src/gh-repo/gh-repo.service';
 
 @Injectable()
 export class RepoService {
   constructor(
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
+    private ghRepo: GhRepoService,
   ) {}
 
   async createRepo(dto: CreateRepoDto, uploadResponse: CloudinaryResponse) {
@@ -188,6 +190,36 @@ export class RepoService {
       success: true,
       message: `Delete repo with ghId ${ghId} successfully!`,
       data: repo,
+    };
+  }
+
+  async syncRepoByRepoName(owner: string, repoName: string) {
+    const repo = await this.ghRepo.getGHRepoByName(owner, repoName);
+
+    const updatedRepo: UpdateRepoDto = {
+      name: repo.name,
+      owner: repo.owner.login,
+      type: repo.owner.type,
+      homepage: repo.homepage,
+      htmlUrl: repo.html_url,
+      description: repo.description,
+    };
+
+    if (repo.license) {
+      updatedRepo.licenseName = repo.license.name;
+      updatedRepo.licenseUrl = repo.license.url;
+    }
+
+    if (repo.description) {
+      updatedRepo.description = repo.description;
+    }
+
+    await this.updateRepoByGhId(repo.id.toString(), updatedRepo);
+
+    return {
+      success: true,
+      message: `Repo ${owner}/${repoName} sync successfully!`,
+      data: null,
     };
   }
 }

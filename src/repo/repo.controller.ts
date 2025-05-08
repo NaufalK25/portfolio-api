@@ -166,4 +166,21 @@ export class RepoController {
   deleteReposByGhId(@Param('ghId') ghId: string) {
     return this.repo.deleteRepoByGhId(ghId);
   }
+
+  @ApiOperation({
+    summary: 'Sync repo by owner/repoName',
+  })
+  @ApiNotFoundResponse({
+    description: 'Repo not found!',
+  })
+  @ApiOkResponse({
+    description: 'Repo owner/repoName sync successfully!',
+  })
+  @Patch(':owner/:repoName/sync')
+  syncRepoByRepoName(
+    @Param('owner') owner: string,
+    @Param('repoName') repoName: string,
+  ) {
+    return this.repo.syncRepoByRepoName(owner, repoName);
+  }
 }

@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# Config files
+ecosystem.config.js
+
 # Environment Variables
 .env*
 !.env.example

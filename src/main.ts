@@ -18,6 +18,8 @@ async function bootstrap() {
         'http://localhost:5173',
         'https://mnaufalk-dashboard.netlify.app',
         'https://muhammad-naufal-kateni.netlify.app',
+        'https://naufalkateni.com',
+        'https://portfolio-dashboard.naufalkateni.com',
       ],
     });
 
@@ -48,6 +50,6 @@ async function bootstrap() {
 
   const configService = new ConfigService();
   const port = configService.get('PORT') || 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
