@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RepoType } from '@prisma/client';
+import { RepoType } from '../generated/prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateRepoDto {
