@@ -4,7 +4,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RepoNameService {
-  constructor(private prisma: PrismaService, private ghRepo: GhRepoService) {}
+  constructor(
+    private prisma: PrismaService,
+    private ghRepo: GhRepoService,
+  ) {}
 
   async getAllReposName() {
     const reposName = await this.prisma.repoName.findMany();

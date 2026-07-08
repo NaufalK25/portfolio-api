@@ -55,7 +55,7 @@ export class GhRepoService {
             login: repo.owner.login,
             type: repo.owner.type,
           },
-        } satisfies GHRepoName),
+        }) satisfies GHRepoName,
     );
   }
 

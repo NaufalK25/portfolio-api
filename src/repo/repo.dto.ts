@@ -28,7 +28,7 @@ export class CreateRepoDto {
   owner: string;
 
   @ApiProperty({
-    type: RepoType,
+    enum: RepoType,
     required: true,
   })
   @IsEnum(RepoType)
@@ -110,7 +110,7 @@ export class UpdateRepoDto {
   owner?: string;
 
   @ApiProperty({
-    type: RepoType,
+    enum: RepoType,
     required: false,
   })
   @IsEnum(RepoType)

@@ -1,9 +1,4 @@
-import {
-  ReferenceObject,
-  SchemaObject,
-} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-
-type ApiBodySchema = SchemaObject | ReferenceObject;
+type ApiBodySchema = Record<string, any>;
 
 export const RepoDtoSchema: ApiBodySchema = {
   type: 'object',
