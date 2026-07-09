@@ -24,7 +24,7 @@ export async function createApp(
     .enableCors({
       origin: [
         'http://localhost:5173',
-        'https://mnaufalk-dashboard.netlify.app',
+        'https://naufalk25-portfolio-dashboard.netlify.app',
         'https://muhammad-naufal-kateni.netlify.app',
         'https://naufalkateni.com',
         'https://portfolio-dashboard.naufalkateni.com',
