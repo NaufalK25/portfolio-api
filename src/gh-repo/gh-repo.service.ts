@@ -1,9 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { GHRepo, GHRepoName } from './gh-repo.dto';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class GhRepoService {
-  async getAllGHRepos(): Promise<GHRepo[]> {
+  constructor(private redis: RedisService) {}
+
+  async getAllGHRepos(bypassCache = false): Promise<GHRepo[]> {
+    if (!bypassCache) {
+      const cached = await this.redis.get('gh-repo:all');
+      if (cached) {
+        return cached as GHRepo[];
+      }
+    }
+
     const userResponse = await fetch(
       'https://api.github.com/users/naufalk25/repos',
     );
@@ -40,13 +50,22 @@ export class GhRepoService {
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
+    await this.redis.set('gh-repo:all', repos, { ex: 60 * 60 * 24 });
+
     return repos;
   }
 
-  async getAllGHReposName(): Promise<GHRepoName[]> {
-    const repos = await this.getAllGHRepos();
+  async getAllGHReposName(bypassCache = false): Promise<GHRepoName[]> {
+    if (!bypassCache) {
+      const cached = await this.redis.get('gh-repo:name:all');
+      if (cached) {
+        return cached as GHRepoName[];
+      }
+    }
 
-    return repos.map(
+    const repos = await this.getAllGHRepos(bypassCache);
+
+    const mappedReposName = repos.map(
       (repo) =>
         ({
           id: repo.id,
@@ -57,16 +76,33 @@ export class GhRepoService {
           },
         }) satisfies GHRepoName,
     );
+
+    await this.redis.set('gh-repo:name:all', mappedReposName, {
+      ex: 60 * 60 * 24,
+    });
+
+    return mappedReposName;
   }
 
-  async getGHRepoByName(owner: string, repoName: string): Promise<GHRepo> {
+  async getGHRepoByName(
+    owner: string,
+    repoName: string,
+    bypassCache = false,
+  ): Promise<GHRepo> {
+    if (!bypassCache) {
+      const cached = await this.redis.get(`gh-repo:name:${owner}:${repoName}`);
+      if (cached) {
+        return cached as GHRepo;
+      }
+    }
+
     const repoResponse = await fetch(
       `https://api.github.com/repos/${owner}/${repoName}`,
     );
 
     const repo = (await repoResponse.json()) as GHRepo;
 
-    return {
+    const ghRepo = {
       id: repo.id,
       name: repo.name,
       owner: {
@@ -84,5 +120,11 @@ export class GhRepoService {
       description: repo.description,
       created_at: repo.created_at,
     } satisfies GHRepo;
+
+    await this.redis.set(`gh-repo:name:${owner}:${repoName}`, ghRepo, {
+      ex: 60 * 60 * 24,
+    });
+
+    return ghRepo;
   }
 }

@@ -1,15 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GhRepoService } from '../gh-repo/gh-repo.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class RepoNameService {
   constructor(
     private prisma: PrismaService,
+    private redis: RedisService,
     private ghRepo: GhRepoService,
   ) {}
 
   async getAllReposName() {
+    const cached = await this.redis.get('repo-name:all');
+    if (cached) {
+      return {
+        success: true,
+        message: 'Get all repo name successfully!',
+        data: cached,
+      };
+    }
+
     const reposName = await this.prisma.repoName.findMany();
 
     if (reposName.length === 0) {
@@ -20,6 +31,8 @@ export class RepoNameService {
       });
     }
 
+    await this.redis.set('repo-name:all', reposName, { ex: 60 * 60 * 24 });
+
     return {
       success: true,
       message: 'Get all repo name successfully!',
@@ -28,7 +41,7 @@ export class RepoNameService {
   }
 
   async syncAllReposName() {
-    const ghReposName = await this.ghRepo.getAllGHReposName();
+    const ghReposName = await this.ghRepo.getAllGHReposName(true);
 
     const reposNamePayload = ghReposName.map((repoName) => {
       const { id, name, owner } = repoName;
@@ -51,6 +64,13 @@ export class RepoNameService {
     await this.prisma.repoName.createMany({
       data: reposNamePayload,
     });
+
+    await this.redis.del(
+      'repo-name:all',
+      ...ghReposName.map(
+        (repoName) => `gh-repo:name:${repoName.owner.login}:${repoName.name}`,
+      ),
+    );
 
     return {
       success: true,

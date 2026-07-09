@@ -8,11 +8,13 @@ import { CloudinaryResponse } from '../cloudinary/cloudinary.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { GhRepoService } from '../gh-repo/gh-repo.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class RepoService {
   constructor(
     private prisma: PrismaService,
+    private redis: RedisService,
     private cloudinary: CloudinaryService,
     private ghRepo: GhRepoService,
   ) {}
@@ -50,6 +52,8 @@ export class RepoService {
       },
     });
 
+    await this.redis.del('repo:all');
+
     return {
       success: true,
       message: 'Create new repo successfully!',
@@ -58,6 +62,15 @@ export class RepoService {
   }
 
   async getAllRepos() {
+    const cached = await this.redis.get('repo:all');
+    if (cached) {
+      return {
+        success: true,
+        message: 'Get all repo successfully!',
+        data: cached,
+      };
+    }
+
     const repos = await this.prisma.repo.findMany();
 
     if (repos.length === 0) {
@@ -67,6 +80,8 @@ export class RepoService {
         data: null,
       });
     }
+
+    await this.redis.set('repo:all', repos, { ex: 60 * 60 * 24 });
 
     return {
       success: true,
@@ -88,6 +103,11 @@ export class RepoService {
 
     await this.prisma.repo.deleteMany();
 
+    await this.redis.del(
+      'repo:all',
+      ...repos.map((repo) => `repo:ghId:${repo.ghId}`),
+    );
+
     return {
       success: true,
       message: `Delete all repo successfully!`,
@@ -96,6 +116,15 @@ export class RepoService {
   }
 
   async getReposByGhId(ghId: string) {
+    const cached = await this.redis.get(`repo:ghId:${ghId}`);
+    if (cached) {
+      return {
+        success: true,
+        message: `Get repo with ghId ${ghId} successfully!`,
+        data: cached,
+      };
+    }
+
     const repo = await this.prisma.repo.findUnique({
       where: {
         ghId,
@@ -109,6 +138,8 @@ export class RepoService {
         data: null,
       });
     }
+
+    await this.redis.set(`repo:ghId:${ghId}`, repo, { ex: 60 * 60 * 24 });
 
     return {
       success: true,
@@ -155,6 +186,8 @@ export class RepoService {
       },
     });
 
+    await this.redis.del('repo:all', `repo:ghId:${ghId}`);
+
     return {
       success: true,
       message: `Update repo with ghId ${ghId} successfully!`,
@@ -186,6 +219,8 @@ export class RepoService {
       },
     });
 
+    await this.redis.del('repo:all', `repo:ghId:${ghId}`);
+
     return {
       success: true,
       message: `Delete repo with ghId ${ghId} successfully!`,
@@ -194,7 +229,9 @@ export class RepoService {
   }
 
   async syncRepoByRepoName(owner: string, repoName: string) {
-    const repo = await this.ghRepo.getGHRepoByName(owner, repoName);
+    const repo = await this.ghRepo.getGHRepoByName(owner, repoName, true);
+
+    await this.redis.del('gh-repo:all', 'gh-repo:name:all');
 
     const updatedRepo: UpdateRepoDto = {
       name: repo.name,

@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { GhRepoModule } from './gh-repo/gh-repo.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './redis/redis.module';
 import { RepoModule } from './repo/repo.module';
 import { RepoNameModule } from './repo-name/repo-name.module';
 
@@ -14,6 +15,7 @@ import { RepoNameModule } from './repo-name/repo-name.module';
       isGlobal: true,
     }),
     PrismaModule,
+    RedisModule,
     AuthModule,
     CloudinaryModule,
     GhRepoModule,
