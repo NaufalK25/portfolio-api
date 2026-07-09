@@ -26,9 +26,9 @@ import {
 import { CreateRepoDto, UpdateRepoDto } from './repo.dto';
 import { RepoDtoSchema } from './repo.schema';
 import { RepoService } from './repo.service';
-import { JwtGuard } from 'src/auth/guard';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { CloudinaryResponse } from 'src/cloudinary/cloudinary.dto';
+import { JwtGuard } from '../auth/guard';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { CloudinaryResponse } from '../cloudinary/cloudinary.dto';
 
 @ApiTags('repo')
 @Controller('api/repo')

@@ -4,10 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateRepoDto, UpdateRepoDto } from './repo.dto';
-import { CloudinaryResponse } from 'src/cloudinary/cloudinary.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { GhRepoService } from 'src/gh-repo/gh-repo.service';
+import { CloudinaryResponse } from '../cloudinary/cloudinary.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { GhRepoService } from '../gh-repo/gh-repo.service';
 
 @Injectable()
 export class RepoService {

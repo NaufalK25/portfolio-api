@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { GhRepoService } from 'src/gh-repo/gh-repo.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { GhRepoService } from '../gh-repo/gh-repo.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class RepoNameService {
