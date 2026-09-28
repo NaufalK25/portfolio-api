@@ -1,14 +1,27 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { User } from '../generated/prisma/client';
 import { AuthDto, VerifyDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { GetUser } from './decorator';
+import { JwtGuard } from './guard';
 
 @ApiTags('auth')
 @Controller('api/auth')
@@ -60,5 +73,25 @@ export class AuthController {
   @Post('verify')
   verify(@Body() dto: VerifyDto) {
     return this.auth.verify(dto);
+  }
+
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth('access_token')
+  @ApiOperation({
+    summary: 'Get the currently logged in user',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized!',
+  })
+  @ApiOkResponse({
+    description: 'Get current user successfully!',
+  })
+  @Get('me')
+  me(@GetUser() user: User) {
+    return {
+      success: true,
+      message: 'Get current user successfully!',
+      data: user,
+    };
   }
 }
