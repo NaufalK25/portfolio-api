@@ -6,6 +6,33 @@ import { RedisService } from '../redis/redis.service';
 export class GhRepoService {
   constructor(private redis: RedisService) {}
 
+  private async fetchAllPages<T>(url: string): Promise<T[]> {
+    const results: T[] = [];
+    let nextUrl: string | null = `${url}?per_page=100`;
+
+    while (nextUrl) {
+      const res = await fetch(nextUrl, {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`GitHub API error ${res.status}: ${await res.text()}`);
+      }
+
+      results.push(...((await res.json()) as T[]));
+
+      // Follow rel="next" from the Link header, stop when there isn't one
+      const link = res.headers.get('link');
+      const match = link?.match(/<([^>]+)>;\s*rel="next"/);
+      nextUrl = match ? match[1] : null;
+    }
+
+    return results;
+  }
+
   async getAllGHRepos(bypassCache = false): Promise<GHRepo[]> {
     if (!bypassCache) {
       const cached = await this.redis.get('gh-repo:all');
@@ -14,15 +41,14 @@ export class GhRepoService {
       }
     }
 
-    const userResponse = await fetch(
-      'https://api.github.com/users/naufalk25/repos',
-    );
-    const orgResponse = await fetch(
-      'https://api.github.com/orgs/primum-coertus/repos',
-    );
-
-    const userRepos = (await userResponse.json()) as GHRepo[];
-    const orgRepos = (await orgResponse.json()) as GHRepo[];
+    const [userRepos, orgRepos] = await Promise.all([
+      this.fetchAllPages<GHRepo>(
+        'https://api.github.com/users/naufalk25/repos',
+      ),
+      this.fetchAllPages<GHRepo>(
+        'https://api.github.com/orgs/primum-coertus/repos',
+      ),
+    ]);
 
     const repos = [...userRepos, ...orgRepos]
       .map((repo) => {
