@@ -54,6 +54,7 @@ export class RepoService {
     });
 
     await this.redis.del('repo:all');
+    await this.triggerPortfolioRebuild();
 
     return {
       success: true,
@@ -108,6 +109,7 @@ export class RepoService {
       'repo:all',
       ...repos.map((repo) => `repo:ghId:${repo.ghId}`),
     );
+    await this.triggerPortfolioRebuild();
 
     return {
       success: true,
@@ -189,6 +191,7 @@ export class RepoService {
     });
 
     await this.redis.del('repo:all', `repo:ghId:${ghId}`);
+    await this.triggerPortfolioRebuild();
 
     return {
       success: true,
@@ -222,6 +225,7 @@ export class RepoService {
     });
 
     await this.redis.del('repo:all', `repo:ghId:${ghId}`);
+    await this.triggerPortfolioRebuild();
 
     return {
       success: true,
@@ -260,6 +264,22 @@ export class RepoService {
       message: `Repo ${owner}/${repoName} sync successfully!`,
       data: null,
     };
+  }
+
+  // Rebuild the prerendered portfolio so its pages and SEO match the new data.
+  // Awaited because Vercel can freeze the function once the response is sent.
+  private async triggerPortfolioRebuild() {
+    const hook = process.env.NETLIFY_BUILD_HOOK;
+    if (!hook) return;
+
+    try {
+      await fetch(`${hook}?trigger_title=portfolio-api+update`, {
+        method: 'POST',
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      // A failed rebuild must not fail the save
+    }
   }
 
   // Notes come from multipart form data: repeated `notes` fields (array),
