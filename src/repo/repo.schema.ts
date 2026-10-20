@@ -23,5 +23,11 @@ export const RepoDtoSchema: ApiBodySchema = {
         type: 'string',
       },
     },
+    notes: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
   },
 };

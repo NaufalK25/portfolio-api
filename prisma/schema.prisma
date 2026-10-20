@@ -37,6 +37,7 @@ model Repo {
   description String?
   created_at  String
   stacks      String[]
+  notes       String[] @default([])
 }
 
 model RepoName {

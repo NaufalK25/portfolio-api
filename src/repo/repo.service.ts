@@ -42,12 +42,13 @@ export class RepoService {
       });
     }
 
-    const { stacks } = dto;
+    const { stacks, notes } = dto;
 
     const createdRepo = await this.prisma.repo.create({
       data: {
         ...dto,
         stacks: stacks.split(','),
+        notes: notes ? this.parseNotes(notes) : [],
         thumbnail: uploadResponse.secure_url,
       },
     });
@@ -167,7 +168,7 @@ export class RepoService {
       });
     }
 
-    const { stacks } = dto;
+    const { stacks, notes } = dto;
 
     if (uploadResponse) {
       await this.cloudinary.deleteImage(
@@ -182,6 +183,7 @@ export class RepoService {
       data: {
         ...dto,
         stacks: stacks ? stacks.split(',') : repo.stacks,
+        notes: notes !== undefined ? this.parseNotes(notes) : repo.notes,
         thumbnail: uploadResponse ? uploadResponse.secure_url : repo.thumbnail,
       },
     });
@@ -258,5 +260,13 @@ export class RepoService {
       message: `Repo ${owner}/${repoName} sync successfully!`,
       data: null,
     };
+  }
+
+  // Notes come from multipart form data: either repeated `notes` fields
+  // (array) or a single text with one paragraph per line.
+  private parseNotes(notes: string | string[]) {
+    const paragraphs = Array.isArray(notes) ? notes : notes.split(/\r?\n/);
+
+    return paragraphs.map((note) => note.trim()).filter(Boolean);
   }
 }

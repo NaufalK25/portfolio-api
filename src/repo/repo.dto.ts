@@ -90,6 +90,14 @@ export class CreateRepoDto {
   @IsString()
   @IsNotEmpty()
   stacks: string;
+
+  @ApiProperty({
+    type: Array,
+    required: false,
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  notes?: string | string[];
 }
 
 export class UpdateRepoDto {
@@ -172,4 +180,12 @@ export class UpdateRepoDto {
   @IsString()
   @IsOptional()
   stacks?: string;
+
+  @ApiProperty({
+    type: Array,
+    required: false,
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  notes?: string | string[];
 }
