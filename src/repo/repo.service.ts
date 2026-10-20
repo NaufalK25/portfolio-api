@@ -262,11 +262,32 @@ export class RepoService {
     };
   }
 
-  // Notes come from multipart form data: either repeated `notes` fields
-  // (array) or a single text with one paragraph per line.
-  private parseNotes(notes: string | string[]) {
-    const paragraphs = Array.isArray(notes) ? notes : notes.split(/\r?\n/);
+  // Notes come from multipart form data: repeated `notes` fields (array),
+  // a JSON-encoded array string, or a single text with one paragraph per line.
+  private parseNotes(notes: string | string[]): string[] {
+    if (Array.isArray(notes)) {
+      return notes.flatMap((note) => this.parseNotes(note));
+    }
 
-    return paragraphs.map((note) => note.trim()).filter(Boolean);
+    const trimmed = notes.trim();
+
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed: unknown = JSON.parse(trimmed);
+        if (
+          Array.isArray(parsed) &&
+          parsed.every((note) => typeof note === 'string')
+        ) {
+          return parsed.map((note) => note.trim()).filter(Boolean);
+        }
+      } catch {
+        // Not JSON, treat it as plain text below
+      }
+    }
+
+    return trimmed
+      .split(/\r?\n/)
+      .map((note) => note.trim())
+      .filter(Boolean);
   }
 }
